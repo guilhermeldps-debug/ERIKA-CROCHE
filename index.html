@@ -306,11 +306,11 @@ footer p{margin:4px 0 0;opacity:.75;font-size:14px}
         <dl id="resumo"></dl>
         <p class="warn" id="warn" hidden></p>
         <div class="acts">
-          <button class="btn" type="button" id="share">Enviar pelo WhatsApp</button>
+          <a class="btn" id="share" href="https://wa.me/5511968059116" target="_blank" rel="noopener">Enviar pelo WhatsApp</a>
+          <button class="btn ghost" type="button" id="img">Enviar imagem do resumo</button>
           <button class="btn ghost" type="button" id="copy">Copiar mensagem</button>
-          <button class="btn ghost" type="button" id="baixar">Baixar resumo</button>
         </div>
-        <p class="note" id="passo">O pedido vai para o WhatsApp da Erika: <a id="waLink" href="https://wa.me/5511968059116" target="_blank" rel="noopener">(11) 96805-9116</a>. No celular, a imagem do resumo (com suas fotos) já segue junto; no computador, ela é baixada para você anexar na conversa. Prefere o Instagram? <a href="https://ig.me/m/erika.croche.art" target="_blank" rel="noopener">Direct da Erika</a>.</p>
+        <p class="note" id="passo"><b>1.</b> Toque em <b>Enviar pelo WhatsApp</b>: a conversa com a Erika, (11) 96805-9116, abre com o pedido já escrito. <b>2.</b> Se adicionou fotos ou quer mostrar as cores, toque em <b>Enviar imagem do resumo</b> e escolha o WhatsApp (no computador, a imagem é baixada para você anexar na conversa). Prefere o Instagram? <a href="https://ig.me/m/erika.croche.art" target="_blank" rel="noopener">Direct da Erika</a>.</p>
         <p class="note">Nada é enviado por este site: suas fotos e dados ficam só no seu aparelho até você mandar.</p>
       </aside>
     </div>
@@ -440,7 +440,8 @@ footer p{margin:4px 0 0;opacity:.75;font-size:14px}
     $('prev').innerHTML=svgFor();
     $('resumo').innerHTML=linhas().map(([k,v])=>`<dt>${k}</dt><dd>${esc(v.length>90?v.slice(0,88)+'…':v)}</dd>`).join('');
     const pb=problema();$('warn').hidden=!pb;$('warn').textContent=pb;
-    const wl=$('waLink');if(wl)wl.href=WA+'?text='+encodeURIComponent(mensagem());
+    $('share').href=WA+'?text='+encodeURIComponent(mensagem());
+    prep();
     salvar();
   };
   const tudo=()=>{drawPieces();drawStyles();drawSw();update();};
@@ -502,22 +503,20 @@ footer p{margin:4px 0 0;opacity:.75;font-size:14px}
     return new Promise(r=>c.toBlob(b=>r(b),'image/png'));
   };
   const copiar=async()=>{try{await navigator.clipboard.writeText(mensagem());return true;}catch(e){return false;}};
-  const baixar=async()=>{const b=await gerarImagem();if(!b)return false;const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='pedido-erika-art.png';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),4000);return true;};
-  const flash=(b,t)=>{const o=b.dataset.o||b.textContent;b.dataset.o=o;b.textContent=t;setTimeout(()=>b.textContent=o,2600);};
+  /* a imagem é preparada antes do toque, para o compartilhar/baixar acontecer na hora (o navegador bloqueia se demorar) */
+  let blobPronto=null,tPrep=0,versao=0;
+  const prep=()=>{blobPronto=null;clearTimeout(tPrep);const v=++versao;tPrep=setTimeout(async()=>{try{const b=await gerarImagem();if(v===versao)blobPronto=b;}catch(e){}},500);};
+  const baixarBlob=b=>{const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='pedido-erika-art.png';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),4000);};
+  const flash=(b,t)=>{const o=b.dataset.o||b.textContent;b.dataset.o=o;b.textContent=t;setTimeout(()=>b.textContent=o,2800);};
   const ok=()=>{const pb=problema();if(pb){$('warn').hidden=false;$('warn').textContent=pb;$('warn').scrollIntoView({behavior:'smooth',block:'center'});return false;}return true;};
-  $('copy').addEventListener('click',async e=>{if(!ok())return;const b=e.currentTarget;flash(b,await copiar()?'Mensagem copiada!':'Não deu para copiar');});
-  $('baixar').addEventListener('click',async e=>{if(!ok())return;const b=e.currentTarget;b.disabled=true;const r=await baixar();b.disabled=false;flash(b,r?'Resumo baixado!':'Não foi possível');});
-  $('share').addEventListener('click',async e=>{
-    if(!ok())return;const b=e.currentTarget;b.disabled=true;
-    const copiou=await copiar();
-    try{const blob=await gerarImagem();const file=new File([blob],'pedido-erika-art.png',{type:'image/png'});
-      if(navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({files:[file],text:mensagem()});b.disabled=false;return;}
-    }catch(err){if(err&&err.name==='AbortError'){b.disabled=false;return;}}
-    const temFoto=await baixar();
-    const url=WA+'?text='+encodeURIComponent(mensagem());
-    $('passo').innerHTML=`Abrimos o WhatsApp da Erika com a mensagem pronta. ${temFoto?'O resumo em imagem foi baixado: anexe-o na conversa (clipe 📎) para ela ver as cores e suas fotos.':''} Se a conversa não abriu, <a id="waLink" href="${url}" target="_blank" rel="noopener">toque aqui</a>.`;
-    window.open(url,'_blank','noopener');
-    b.disabled=false;
+  $('share').addEventListener('click',e=>{if(!ok()){e.preventDefault();return;}e.currentTarget.href=WA+'?text='+encodeURIComponent(mensagem());try{navigator.clipboard.writeText(mensagem()).catch(()=>{});}catch(x){}});
+  $('copy').addEventListener('click',async e=>{if(!ok())return;const b=e.currentTarget;let r=false;try{await navigator.clipboard.writeText(mensagem());r=true;}catch(x){}flash(b,r?'Mensagem copiada!':'Não deu para copiar');});
+  $('img').addEventListener('click',e=>{
+    if(!ok())return;const b=e.currentTarget;
+    if(!blobPronto){flash(b,'Preparando… toque de novo');prep();return;}
+    const file=new File([blobPronto],'pedido-erika-art.png',{type:'image/png'});
+    if(navigator.canShare&&navigator.canShare({files:[file]})){navigator.share({files:[file]}).catch(err=>{if(err&&err.name!=='AbortError'){baixarBlob(blobPronto);flash(b,'Imagem baixada');}});return;}
+    baixarBlob(blobPronto);flash(b,'Imagem baixada — anexe no WhatsApp');
   });
   tudo();
   const ring=document.getElementById('ring');let h='';
