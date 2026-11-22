@@ -241,7 +241,7 @@ footer p{margin:4px 0 0;opacity:.75;font-size:14px}
     <h2>Como encomendar</h2>
     <div class="steps">
       <div class="step"><h3>Escolha a peça</h3><p>Inspire-se nas peças daqui ou no Instagram e diga o que você imagina: cores, medidas e para quando precisa.</p></div>
-      <div class="step"><h3>Receba o orçamento</h3><p>Monte seu pedido aqui no site — peça, estilo, cores e foto de referência — e envie no direct. A Erika responde com valor e prazo.</p></div>
+      <div class="step"><h3>Receba o orçamento</h3><p>Monte seu pedido aqui no site — peça, estilo, cores e foto de referência — e envie pelo WhatsApp. A Erika responde com valor e prazo.</p></div>
       <div class="step"><h3>Produção e envio</h3><p>Sua peça é feita sob encomenda, embalada com carinho e enviada para qualquer lugar do Brasil.</p></div>
     </div>
   </div>
@@ -265,7 +265,7 @@ footer p{margin:4px 0 0;opacity:.75;font-size:14px}
 <section class="band" id="orcamento">
   <div class="wrap">
     <h2>Monte seu pedido</h2>
-    <p class="lead">Escolha a peça, o estilo e as cores, mande uma foto de referência ou descreva sua ideia. No final, o site prepara a mensagem e um resumo em imagem para você enviar à Erika no direct do Instagram.</p>
+    <p class="lead">Escolha a peça, o estilo e as cores, mande uma foto de referência ou descreva sua ideia. No final, o site prepara a mensagem e um resumo em imagem para você enviar à Erika pelo WhatsApp.</p>
     <div class="cfg">
       <form id="f" novalidate>
         <fieldset class="st"><legend><span>1</span>Escolha a peça</legend>
@@ -306,11 +306,11 @@ footer p{margin:4px 0 0;opacity:.75;font-size:14px}
         <dl id="resumo"></dl>
         <p class="warn" id="warn" hidden></p>
         <div class="acts">
-          <button class="btn" type="button" id="share">Enviar à Erika</button>
+          <button class="btn" type="button" id="share">Enviar pelo WhatsApp</button>
           <button class="btn ghost" type="button" id="copy">Copiar mensagem</button>
           <button class="btn ghost" type="button" id="baixar">Baixar resumo</button>
         </div>
-        <p class="note" id="passo">Copie a mensagem, baixe o resumo (já vai com suas fotos) e mande os dois no direct: <a href="https://ig.me/m/erika.croche.art" target="_blank" rel="noopener">ig.me/m/erika.croche.art</a></p>
+        <p class="note" id="passo">O pedido vai para o WhatsApp da Erika: <a id="waLink" href="https://wa.me/5511968059116" target="_blank" rel="noopener">(11) 96805-9116</a>. No celular, a imagem do resumo (com suas fotos) já segue junto; no computador, ela é baixada para você anexar na conversa. Prefere o Instagram? <a href="https://ig.me/m/erika.croche.art" target="_blank" rel="noopener">Direct da Erika</a>.</p>
         <p class="note">Nada é enviado por este site: suas fotos e dados ficam só no seu aparelho até você mandar.</p>
       </aside>
     </div>
@@ -323,7 +323,7 @@ footer p{margin:4px 0 0;opacity:.75;font-size:14px}
       <img src="img/logo.jpg" alt="">
       <div><strong>Erika Art — Crochê Artesanal</strong><p>Erika Lopes · peças únicas feitas à mão</p></div>
     </div>
-    <div>Instagram: <a href="https://www.instagram.com/erika.croche.art/" target="_blank" rel="noopener">@erika.croche.art</a></div>
+    <div>WhatsApp: <a href="https://wa.me/5511968059116" target="_blank" rel="noopener">(11) 96805-9116</a><br>Instagram: <a href="https://www.instagram.com/erika.croche.art/" target="_blank" rel="noopener">@erika.croche.art</a></div>
   </div>
 </footer>
 
@@ -358,6 +358,7 @@ footer p{margin:4px 0 0;opacity:.75;font-size:14px}
   dlg.addEventListener('click',e=>{if(e.target===dlg||e.target.closest('button'))dlg.close();});
   if(!CanvasRenderingContext2D.prototype.roundRect)CanvasRenderingContext2D.prototype.roundRect=function(x,y,w,h){this.rect(x,y,w,h)};
   /* ===== configurador de pedido ===== */
+  const WA='https://wa.me/5511968059116';
   const PECAS={
     sousplat:{t:'Sousplat',img:'mesa-cru.jpg',shape:'round',opts:[
       {k:'Modelo',v:['Rendado em leque','Liso com borda em ondas','Flor com pontas']},
@@ -439,6 +440,7 @@ footer p{margin:4px 0 0;opacity:.75;font-size:14px}
     $('prev').innerHTML=svgFor();
     $('resumo').innerHTML=linhas().map(([k,v])=>`<dt>${k}</dt><dd>${esc(v.length>90?v.slice(0,88)+'…':v)}</dd>`).join('');
     const pb=problema();$('warn').hidden=!pb;$('warn').textContent=pb;
+    const wl=$('waLink');if(wl)wl.href=WA+'?text='+encodeURIComponent(mensagem());
     salvar();
   };
   const tudo=()=>{drawPieces();drawStyles();drawSw();update();};
@@ -482,7 +484,7 @@ footer p{margin:4px 0 0;opacity:.75;font-size:14px}
     const logo=await loadImg('img/logo.jpg');
     if(logo){ctx.save();ctx.beginPath();ctx.arc(P+60,130,60,0,Math.PI*2);ctx.clip();ctx.drawImage(logo,P,70,120,120);ctx.restore();}
     ctx.fillStyle='#3d2430';ctx.font='300 58px "Josefin Sans", sans-serif';ctx.fillText('Pedido personalizado',P+150,128);
-    ctx.fillStyle='#c9496f';ctx.font='600 30px "Nunito Sans", sans-serif';ctx.fillText('Erika Art · Crochê Artesanal · @erika.croche.art',P+150,174);
+    ctx.fillStyle='#c9496f';ctx.font='600 30px "Nunito Sans", sans-serif';ctx.fillText('Erika Art · Crochê Artesanal · (11) 96805-9116',P+150,174);
     const svg=await loadImg('data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svgFor()));
     ctx.fillStyle='#f1e1d2';ctx.beginPath();ctx.roundRect(P,240,W-P*2,360,30);ctx.fill();
     if(svg)ctx.drawImage(svg,(W-462)/2,255,462,330);
@@ -511,9 +513,10 @@ footer p{margin:4px 0 0;opacity:.75;font-size:14px}
     try{const blob=await gerarImagem();const file=new File([blob],'pedido-erika-art.png',{type:'image/png'});
       if(navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({files:[file],text:mensagem()});b.disabled=false;return;}
     }catch(err){if(err&&err.name==='AbortError'){b.disabled=false;return;}}
-    await baixar();
-    $('passo').innerHTML=`${copiou?'A mensagem foi copiada e o':'O'} resumo foi baixado. Agora abra o direct, cole a mensagem e anexe a imagem: <a href="https://ig.me/m/erika.croche.art" target="_blank" rel="noopener">abrir o direct da Erika</a>`;
-    window.open('https://ig.me/m/erika.croche.art','_blank','noopener');
+    const temFoto=await baixar();
+    const url=WA+'?text='+encodeURIComponent(mensagem());
+    $('passo').innerHTML=`Abrimos o WhatsApp da Erika com a mensagem pronta. ${temFoto?'O resumo em imagem foi baixado: anexe-o na conversa (clipe 📎) para ela ver as cores e suas fotos.':''} Se a conversa não abriu, <a id="waLink" href="${url}" target="_blank" rel="noopener">toque aqui</a>.`;
+    window.open(url,'_blank','noopener');
     b.disabled=false;
   });
   tudo();
